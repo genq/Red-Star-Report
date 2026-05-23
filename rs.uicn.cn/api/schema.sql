@@ -121,8 +121,11 @@ CREATE TABLE IF NOT EXISTS rank_goals (
     name TEXT NOT NULL,
     target_type TEXT NOT NULL DEFAULT 'grade_rank',
     target_value INTEGER NOT NULL,
+    subject_scores TEXT NOT NULL DEFAULT '{}',
+    exam_id INTEGER DEFAULT NULL,
     created_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),
-    FOREIGN KEY (user_id) REFERENCES accounts(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES accounts(id) ON DELETE CASCADE,
+    FOREIGN KEY (exam_id) REFERENCES exams(id) ON DELETE SET NULL
 );
 CREATE INDEX IF NOT EXISTS idx_goals_user ON rank_goals(user_id);
 

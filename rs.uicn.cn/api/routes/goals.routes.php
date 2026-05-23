@@ -20,13 +20,19 @@ if ($routePath === '/goals' && $method === 'POST') {
     if (!$name) err('请输入目标名称');
 
     $db = getDB();
-    $stmt = $db->prepare("INSERT INTO rank_goals (user_id, name, target_type, target_value, subject_scores, exam_id) VALUES (?, ?, 'grade_rank', 0, ?, ?)");
-    $stmt->execute([$user['id'], $name, json_encode($subjectScores), $examId]);
-    $goalId = $db->lastInsertId();
-    if ($targetGradeRank !== null || $targetClassRank !== null) {
-        $db->exec("UPDATE rank_goals SET target_value = " . (($targetGradeRank ?? 0) + ($targetClassRank ?? 0)) . " WHERE id = $goalId");
+    try {
+        $stmt = $db->prepare("INSERT INTO rank_goals (user_id, name, target_type, target_value, subject_scores, exam_id) VALUES (?, ?, 'grade_rank', 0, ?, ?)");
+        $stmt->execute([$user['id'], $name, json_encode($subjectScores), $examId]);
+        $goalId = $db->lastInsertId();
+        if ($targetGradeRank !== null || $targetClassRank !== null) {
+            $stmt2 = $db->prepare("UPDATE rank_goals SET target_value = ? WHERE id = ?");
+            $stmt2->execute([($targetGradeRank ?? 0) + ($targetClassRank ?? 0), $goalId]);
+        }
+        ok(['message' => '目标创建成功']);
+    } catch (Exception $e) {
+        error_log('[Goals] 创建目标失败: ' . $e->getMessage());
+        err('目标创建失败，请稍后重试', 500);
     }
-    ok(['message' => '目标创建成功']);
 }
 
 if (preg_match('#^/goals/(\d+)$#', $routePath, $m) && $method === 'PUT') {
@@ -36,11 +42,16 @@ if (preg_match('#^/goals/(\d+)$#', $routePath, $m) && $method === 'PUT') {
     if (!$goal) err('目标不存在');
     $name = trim($input['name'] ?? $goal['name']);
     $targetValue = (int)($input['targetValue'] ?? $goal['target_value']);
-    $subjectScores = isset($input['subjectScores']) ? json_encode($input['subjectScores']) : $goal['subject_scores'];
-    $db = getDB();
-    $stmt = $db->prepare("UPDATE rank_goals SET name = ?, target_value = ?, subject_scores = ? WHERE id = ?");
-    $stmt->execute([$name, $targetValue, $subjectScores, $goalId]);
-    ok(['message' => '目标更新成功']);
+    $subjectScores = isset($input['subjectScores']) ? json_encode($input['subjectScores']) : ($goal['subject_scores'] ?? '{}');
+    try {
+        $db = getDB();
+        $stmt = $db->prepare("UPDATE rank_goals SET name = ?, target_value = ?, subject_scores = ? WHERE id = ?");
+        $stmt->execute([$name, $targetValue, $subjectScores, $goalId]);
+        ok(['message' => '目标更新成功']);
+    } catch (Exception $e) {
+        error_log('[Goals] 更新目标失败: ' . $e->getMessage());
+        err('目标更新失败，请稍后重试', 500);
+    }
 }
 
 if (preg_match('#^/goals/(\d+)$#', $routePath, $m) && $method === 'DELETE') {
