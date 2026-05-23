@@ -33,3 +33,11 @@ uploads/
 # 系统文件
 .DS_Store
 Thumbs.db
+
+# 开发文档和 specification（不公开）
+.trae/
+.workbuddy/
+Code-Wiki.md
+开发文档审查报告-V6.0.md
+测试指南.md
+Red-Star学情报告-开发文档.md
