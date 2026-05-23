@@ -1,0 +1,21 @@
+- [x] Nginx配置已添加/data/和/backups/禁止访问规则
+- [x] config.php已添加JWT_SECRET默认值检测逻辑
+- [x] 已实现登录失败次数限制（5次/15分钟）
+- [x] config.php已添加PHP扩展检查（PDO/SQLite/JSON/mbstring/OpenSSL）
+- [x] 暗色主题CSS变量已完整补充（含Element Plus覆盖）
+- [x] 响应式断点已定义（sm/md/lg/xl）
+- [x] 酷炫效果实现方案已明确（CSS keyframes、countup.js）
+- [x] Element Plus主题桥接代码已补充
+- [x] Chart.js暗色模式适配逻辑已补充
+- [x] PHP错误日志配置已添加
+- [x] CORS生产环境白名单实现已说明
+- [x] 前端SQLite并发重试逻辑已补充
+- [x] data/backups目录权限说明已补充
+- [x] 路由守卫router.beforeEach已补充完整实现
+- [x] 404 NotFoundView.vue和通配路由已补充
+- [x] .env环境变量配置已补充
+- [x] 会员系统简化建议已添加
+- [x] 自动备份机制已补充
+- [x] 密码复杂度建议已补充
+- [x] CSV导入超时设置已补充
+- [x] 开发计划§13过时描述已更新
