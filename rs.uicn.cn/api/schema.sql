@@ -121,6 +121,8 @@ CREATE TABLE IF NOT EXISTS rank_goals (
     name TEXT NOT NULL,
     target_type TEXT NOT NULL DEFAULT 'grade_rank',
     target_value INTEGER NOT NULL,
+    target_grade_rank INTEGER DEFAULT NULL,
+    target_class_rank INTEGER DEFAULT NULL,
     subject_scores TEXT NOT NULL DEFAULT '{}',
     exam_id INTEGER DEFAULT NULL,
     created_at TEXT NOT NULL DEFAULT (datetime('now','localtime')),

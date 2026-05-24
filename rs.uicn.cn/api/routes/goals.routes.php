@@ -21,8 +21,8 @@ if ($routePath === '/goals' && $method === 'POST') {
 
     $db = getDB();
     try {
-        $stmt = $db->prepare("INSERT INTO rank_goals (user_id, name, target_type, target_value, subject_scores, exam_id) VALUES (?, ?, 'grade_rank', 0, ?, ?)");
-        $stmt->execute([$user['id'], $name, json_encode($subjectScores), $examId]);
+        $stmt = $db->prepare("INSERT INTO rank_goals (user_id, name, target_type, target_value, target_grade_rank, target_class_rank, subject_scores, exam_id) VALUES (?, ?, 'grade_rank', 0, ?, ?, ?, ?)");
+        $stmt->execute([$user['id'], $name, $targetGradeRank, $targetClassRank, json_encode($subjectScores), $examId]);
         $goalId = $db->lastInsertId();
         if ($targetGradeRank !== null || $targetClassRank !== null) {
             $stmt2 = $db->prepare("UPDATE rank_goals SET target_value = ? WHERE id = ?");

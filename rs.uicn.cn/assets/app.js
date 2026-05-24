@@ -81,6 +81,18 @@ function api(method, url, data) {
     });
 }
 
+function showToast(msg, type) {
+    var toast = document.createElement('div');
+    toast.className = 'toast' + (type ? ' toast-' + type : '');
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(function() {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity .3s';
+        setTimeout(function() { document.body.removeChild(toast); }, 300);
+    }, 2000);
+}
+
 function logout() {
     document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     location.href = '/login.php';
@@ -589,12 +601,11 @@ function renderExamGoal() {
             myExams.sort(function(a, b) { return (a.date || '').localeCompare(b.date || ''); });
 
             var rows = goals.map(function(g) {
-                var typeText = g.target_type === 'grade_rank' ? '年级排名' : '班级排名';
                 var achieved = g.is_achieved ? '<span style="color:#67C23A">✓ 已达成</span>' : '<span style="color:#999">未达成</span>';
                 var totalScore = g.total_score || 0;
                 return '<tr><td>' + htmlEscape(g.name) + '</td><td>' + (totalScore > 0 ? totalScore + '分' : '-') + '</td>' +
-                    '<td>' + (g.target_grade_rank ? '年级:' + g.target_grade_rank : '-') + '</td>' +
-                    '<td>' + (g.target_class_rank ? '班级:' + g.target_class_rank : '-') + '</td>' +
+                    '<td>' + (g.target_grade_rank ? '第' + g.target_grade_rank + '名' : '-') + '</td>' +
+                    '<td>' + (g.target_class_rank ? '第' + g.target_class_rank + '名' : '-') + '</td>' +
                     '<td>' + achieved + '</td><td><a href="#" onclick="deleteGoal(' + g.id + ')" style="color:#F56C6C">删除</a></td></tr>';
             }).join('');
             var electives = getSubjectMap();
@@ -604,7 +615,7 @@ function renderExamGoal() {
                 '<div class="page-desc">设定各科目标分数与排名目标</div>' +
                 '<div class="card"><div class="card-title">设置目标</div>' +
                     '<div class="form-group"><label>目标名称</label><input type="text" id="goalName" placeholder="如：高一下期中目标" /></div>' +
-                    '<div class="form-group"><label>关联考试</label><select id="goalExamId"><option value="">-- 选择要挑战的考试 --</option>' + examOptions + '</select></div>' +
+                    '<div class="form-group"><label>关联考试</label><select id="goalExamId" onchange="onGoalExamChange()"><option value="">-- 选择要挑战的考试 --</option>' + examOptions + '</select></div>' +
                     '<table class="data-table" style="margin-top:12px;font-size:13px"><thead><tr><th>科目</th><th>目标分数</th><th>满分</th></tr></thead><tbody>' +
                     '<tr><td style="font-weight:500">语文</td><td><input type="number" id="goalChinese" placeholder="目标分" style="width:80px;padding:5px 6px;border:1px solid #dcdfe6;border-radius:3px" /></td><td style="color:#909399">150</td></tr>' +
                     '<tr><td style="font-weight:500">数学</td><td><input type="number" id="goalMath" placeholder="目标分" style="width:80px;padding:5px 6px;border:1px solid #dcdfe6;border-radius:3px" /></td><td style="color:#909399">150</td></tr>' +
@@ -634,6 +645,16 @@ function renderExamGoal() {
         h('<div class="page-title">考试目标</div>' +
             '<div class="card"><div class="empty-state">加载失败，请刷新重试</div></div>');
     });
+}
+
+function onGoalExamChange() {
+    var sel = $('goalExamId');
+    if (!sel || !sel.value) return;
+    var examName = sel.options[sel.selectedIndex].text;
+    var nameInput = $('goalName');
+    if (nameInput && !nameInput.value.trim()) {
+        nameInput.value = examName.replace(/\(.*\)$/, '').trim();
+    }
 }
 
 function updateGoalTotal() {
@@ -669,10 +690,10 @@ function submitGoal() {
     if (goalExamId) data.exam_id = parseInt(goalExamId);
     api('POST', '/goals', data).then(function(res) {
         if (res.success) {
-            alert('目标已设置');
+            showToast('目标已设置', 'success');
             renderExamGoal();
         } else {
-            alert('设置失败: ' + (res.message || '未知错误'));
+            showToast('设置失败: ' + (res.message || '未知错误'), 'error');
         }
     });
 }
@@ -681,10 +702,10 @@ function deleteGoal(goalId) {
     if (!confirm('确定要删除这个目标吗？')) return;
     api('DELETE', '/goals/' + goalId).then(function(res) {
         if (res.success) {
-            alert('目标已删除');
+            showToast('目标已删除', 'success');
             renderExamGoal();
         } else {
-            alert('删除失败: ' + (res.message || '未知错误'));
+            showToast('删除失败: ' + (res.message || '未知错误'), 'error');
         }
     });
 }

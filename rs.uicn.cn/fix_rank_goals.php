@@ -19,6 +19,20 @@ try {
     echo "exam_id 列已存在: " . $e->getMessage() . "\n";
 }
 
+try {
+    $db->exec("ALTER TABLE rank_goals ADD COLUMN target_grade_rank INTEGER DEFAULT NULL");
+    echo "已添加 target_grade_rank 列\n";
+} catch (Exception $e) {
+    echo "target_grade_rank 列已存在: " . $e->getMessage() . "\n";
+}
+
+try {
+    $db->exec("ALTER TABLE rank_goals ADD COLUMN target_class_rank INTEGER DEFAULT NULL");
+    echo "已添加 target_class_rank 列\n";
+} catch (Exception $e) {
+    echo "target_class_rank 列已存在: " . $e->getMessage() . "\n";
+}
+
 echo "\n=== 当前 rank_goals 表结构 ===\n";
 $cols = $db->query("PRAGMA table_info(rank_goals)");
 foreach ($cols as $col) {

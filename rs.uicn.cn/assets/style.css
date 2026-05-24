@@ -1641,3 +1641,26 @@ table.data-table tr:last-child td {
     color: #409EFF;
 }
 
+.toast {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 15px;
+    z-index: 9999;
+    animation: toastIn .3s ease;
+    pointer-events: none;
+}
+
+.toast-success { background: rgba(103, 194, 58, 0.9); }
+.toast-error { background: rgba(245, 108, 108, 0.9); }
+
+@keyframes toastIn {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
